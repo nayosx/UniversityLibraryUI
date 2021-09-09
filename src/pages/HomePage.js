@@ -50,6 +50,7 @@ import Tooltips from "./components/Tooltips";
 import Toasts from "./components/Toasts";
 
 import Book from './Books';
+import BooksPaginate from './BooksPaginate';
 
 const RouteWithLoader = ({ component: Component, ...rest }) => {
   const [loaded, setLoaded] = useState(false);
@@ -146,6 +147,7 @@ export default () => (
     <RouteWithSidebar exact path={Routes.DocsChangelog.path} component={DocsChangelog} />
 
     <RouteWithSidebar exact path={Routes.Books.path} component={Book} />
+    <RouteWithSidebar exact path={Routes.BooksPaginate.path} component={BooksPaginate} />
     <Redirect to={Routes.NotFound.path} />
   </Switch>
 );

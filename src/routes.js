@@ -47,5 +47,6 @@ export const Routes = {
     Tooltips: { path: "/components/tooltips" },
     Toasts: { path: "/components/toasts" },
     WidgetsComponent: { path: "/components/widgets" },
-    Books: {path: "/books"}
+    Books: {path: "/book"},
+    BooksPaginate: {path: "/books"}
 };
