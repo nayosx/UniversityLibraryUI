@@ -27,10 +27,15 @@ import "react-datetime/css/react-datetime.css";
 import HomePage from "./pages/HomePage";
 import ScrollToTop from "./components/ScrollToTop";
 
+import { Provider } from 'react-redux';
+import {store} from './redux/store';
+
 ReactDOM.render(
-  <HashRouter>
-    <ScrollToTop />
-    <HomePage />
-  </HashRouter>,
+  <Provider store={store}>
+    <HashRouter>
+      <ScrollToTop />
+      <HomePage />
+    </HashRouter>
+  </Provider>,
   document.getElementById("root")
 );

@@ -1,30 +1,45 @@
-import React from "react";
+import React, {useState} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faEnvelope, faUnlockAlt } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookF, faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { Col, Row, Form, Card, Button, FormCheck, Container, InputGroup } from '@themesberg/react-bootstrap';
-import {  Route, Switch, Redirect, Link, useHistory } from 'react-router-dom';
+import { Route, Switch, Redirect, Link, useHistory } from 'react-router-dom';
 import { Routes } from "../../routes";
 
 import BgImage from "../../assets/img/illustrations/signin.svg";
 import { httpPost, httpGet } from "../../data/baseHttpHandler";
-
-
+import jwt_decode from "jwt-decode";
+import { useDispatch } from 'react-redux';
+import {saveUserAuth} from '../../redux/actions/AuthActions';
+import {envi} from '../../environment';
+ 
 export default () => {
+	const [email, setEmail] = useState("pacoelchato@mail.com");
+	const [password, setPassword] = useState("k1r@");
+
+	const [messageError, setMessageError] = useState("");
+	const [isError, setIsError] = useState(false);
+
 	let history = useHistory();
+	const dispatch = useDispatch();
 	
 	const submitForm = (e) => {
 		e.preventDefault();
-		httpPost(process.env.REACT_APP_SERVER.concat(process.env.REACT_APP_USERS_LOGIN), 
-			{
-				"email": "pacoelchato@mail.com",
-				"password": "k1r@"
-			}
+		httpPost(envi.pages.login.auth, 
+			{ email,password }
 		).then(data => {
-			console.log(data);
-			history.push('/books');
+			if(data) {
+				let user = jwt_decode(data.auth_token);
+				dispatch(saveUserAuth(user));
+				localStorage.setItem('token', data.auth_token);
+				history.push('/books');
+			} else {
+				setIsError(true);
+				setMessageError(envi.pages.login.texts.errorCredentials);
+			}
 		}).catch((error) => {
-			console.log(error);
+			setIsError(true);
+			setMessageError(envi.pages.login.texts.errorServer);
 		});
 	}
 
@@ -45,7 +60,15 @@ export default () => {
 											<InputGroup.Text>
 												<FontAwesomeIcon icon={faEnvelope} />
 											</InputGroup.Text>
-											<Form.Control autoFocus required type="email" placeholder="example@company.com" />
+											<Form.Control
+												required 
+												autoFocus 
+												type="email" 
+												placeholder="example@university.com"
+												name="email"
+												value={email}
+												onChange={(e)=> setEmail(e.target.value)}
+											/>
 										</InputGroup>
 									</Form.Group>
 									<Form.Group>
@@ -55,16 +78,16 @@ export default () => {
 												<InputGroup.Text>
 													<FontAwesomeIcon icon={faUnlockAlt} />
 												</InputGroup.Text>
-												<Form.Control required type="password" placeholder="Password" />
+												<Form.Control 
+													required 
+													type="password" 
+													placeholder="Password" 
+													name="password"
+													value = {password}
+													onChange={(e)=>setPassword(e.target.value)}
+												/>
 											</InputGroup>
 										</Form.Group>
-										<div className="d-flex justify-content-between align-items-center mb-4">
-											{/* <Form.Check type="checkbox">
-												<FormCheck.Input id="defaultCheck5" className="me-2" />
-												<FormCheck.Label htmlFor="defaultCheck5" className="mb-0">Remember me</FormCheck.Label>
-											</Form.Check> 
-											<Card.Link className="small text-end">Lost password?</Card.Link> */}
-										</div>
 									</Form.Group>
 									<Button variant="primary" type="submit" className="w-100">
 										Sign in
@@ -72,7 +95,11 @@ export default () => {
 								</Form>
 
 								<div className="mt-3 mb-4 text-center">
-									
+									{ isError && 
+										<div className="alert alert-danger" role="alert">
+											{messageError}
+									  	</div>
+									}
 								</div>
 							</div>
 						</Col>

@@ -4,10 +4,10 @@ import Table from "react-bootstrap-table-next";
 import Pagination from "react-bootstrap-table2-paginator";
 import * as Paginator from "react-bootstrap-table2-paginator";
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
-import { httpGet } from "../data/baseHttpHandler";
+import { httpGet } from "../../data/baseHttpHandler";
 
 
-const BooksPaginate = () => {
+const Books = () => {
 
     useEffect(() => {
         getBooks();
@@ -117,4 +117,4 @@ const BooksPaginate = () => {
     );
 }
 
-export default BooksPaginate;
+export default Books;
