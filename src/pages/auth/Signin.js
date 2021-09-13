@@ -63,7 +63,12 @@ export default () => {
 				setToken(data.auth_token);
 				setRol(user.rol);
 				console.log(user);
-				history.push(Routes.Books.path);
+
+				if(user.rol == envi.pages.librarian.id) {
+					history.push(Routes.Books.path);
+				} else {
+					history.push(Routes.Student.path);
+				}
 			} else {
 				setIsError(true);
 				setMessageError(environment.texts.errorCredentials);

@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SimpleBar from 'simplebar-react';
 import { useLocation } from "react-router-dom";
 import { CSSTransition } from 'react-transition-group';
@@ -13,11 +13,28 @@ import ThemesbergLogo from "../assets/img/themesberg.svg";
 import ReactHero from "../assets/img/technologies/react-hero-logo.svg";
 import ProfilePicture from "../assets/img/team/profile-picture-3.jpg";
 
+import { getRol } from "../data/baseHttpHandler";
+import { envi } from "../environment";
+
 export default (props = {}) => {
 	const location = useLocation();
 	const { pathname } = location;
 	const [show, setShow] = useState(false);
 	const showClass = show ? "show" : "";
+
+	const [isStudent, setIsStudent] = useState(false);
+
+	useEffect(() => {
+        checkIsValidSessionForLibrarian();
+    }, []);
+
+	const checkIsValidSessionForLibrarian = () => {
+		if(getRol() > 0 && getRol() == envi.pages.librarian.id) {
+			setIsStudent(false);
+		} else {
+			setIsStudent(true);
+		}
+	};
 
 	const onCollapse = () => setShow(!show);
 
@@ -97,14 +114,22 @@ export default (props = {}) => {
 							</Nav.Link>
 						</div>
 						<Nav className="flex-column pt-3 pt-md-0">
-							<NavItem title="Books" link={Routes.Books.path} image={ReactHero} />
-							<NavItem title="Authors" link={Routes.Authors.path} icon={faAddressBook} />
-							<NavItem title="Genders" link={Routes.Genders.path} icon={faVectorSquare} />
-							<NavItem title="Loans" link={Routes.Loans.path} icon={faTasks} />
-							<NavItem title="Students" link={Routes.Students.path} icon={faUsers} />
+							{!isStudent && (
+								<>
+									<NavItem title="Books" link={Routes.Books.path} image={ReactHero} />
+									<NavItem title="Authors" link={Routes.Authors.path} icon={faAddressBook} />
+									<NavItem title="Genders" link={Routes.Genders.path} icon={faVectorSquare} />
+									<NavItem title="Students" link={Routes.Students.path} icon={faUsers} />
+									<NavItem title="Loans" link={Routes.Loans.path} icon={faTasks} />
+								</>
+							)}
 
-							<NavItem title="Search" link={Routes.Student.path} icon={faSearch} />
-							<NavItem title="Selected books" link={Routes.StudentCart.path} icon={faCartPlus} />
+							{isStudent && (
+								<>
+									<NavItem title="Search" link={Routes.Student.path} icon={faSearch} />
+									<NavItem title="Selected books" link={Routes.StudentCart.path} icon={faCartPlus} />
+								</>
+							)}
 
 							<Dropdown.Divider className="my-3 border-indigo" />
 
