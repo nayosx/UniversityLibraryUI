@@ -40,6 +40,7 @@ import StudentCreateOrEdit from './librarian/Student';
 // Student
 import Student from './student/Student';
 import StudentCart from './student/StudentCart';
+import BookDetails from './student/BookDetails';
 
 const RouteWithLoader = ({ component: Component, ...rest }) => {
 	const [loaded, setLoaded] = useState(false);
@@ -106,6 +107,8 @@ export default () => (
 		{/*Student */}
 		<RouteWithSidebar exact path={Routes.Student.path} component={Student} />
 		<RouteWithSidebar exact path={Routes.StudentCart.path} component={StudentCart} />
+		<RouteWithSidebar exact path={Routes.StudentBookDetails.path} component={BookDetails} />
+		
 
 		{/*librarian*/}
 		<RouteWithSidebar exact path={Routes.Authors.path} component={Authors} />

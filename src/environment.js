@@ -28,6 +28,7 @@ const envi = {
             delete: "Delete",
             update: "Update",
             cancel: "Cancel",
+            back: "Back to",
         }
     },
     pages: {
@@ -44,6 +45,27 @@ const envi = {
         },
         student: {
             id: 1,
+            title: "Students",
+            search: {
+                title: "Search books",
+                url: `${api}/books`,
+                texts: {
+                    no_match: "Is not find any book",
+                    validName: `Invalid params for search`,
+                    nameRequired: "The search is required",
+                },
+                defaultObj: {
+                    search: '',
+                    searchType: 'title'
+                }
+            },
+            shoppinCart: {
+                title: "List of books",
+                url: `${api}/books`,
+                texts: {
+                    no_match: "Is not find any book"
+                }
+            },
         },
         librarian: {
             id: 2,

@@ -15,6 +15,7 @@ export const Routes = {
 
     //student
     Student: {path: "/student"},
+    StudentBookDetails: {path: "/stundet/details"},
     StudentCart: {path: "/student/cart"},
 
     //librarian

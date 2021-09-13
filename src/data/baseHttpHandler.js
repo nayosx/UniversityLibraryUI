@@ -6,13 +6,30 @@ const setToken = (token) => {
 	sessionStorage.setItem('token', token);
 }
 
-
 const getRol = () => {
 	return (sessionStorage.getItem('rol') !== null) ? sessionStorage.getItem('rol') : 0;
 }
 
 const setRol = (idRol) => {
 	sessionStorage.setItem('rol', idRol);
+}
+
+const setBook = (book) => {
+	sessionStorage.setItem('book', JSON.stringify(book));
+}
+
+const getBook = () => {
+	let book = {
+		title: '',
+		id: 0,
+		descriptio: ''
+	}
+
+	if(sessionStorage.getItem('book') !== null) {
+		book = JSON.parse(sessionStorage.getItem('book'));
+	}
+
+	return book;
 }
 
 const clearLocalDatabase = () => {
@@ -78,4 +95,4 @@ const httpDelete = async(url = '', isToken = true) => {
 	return response.json();
 }
 
-export { httpPost, httpGet, httpPut, httpDelete, setToken, clearLocalDatabase, getRol, setRol }
+export { httpPost, httpGet, httpPut, httpDelete, setToken, clearLocalDatabase, getRol, setRol, setBook, getBook}
