@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Form, Button } from '@themesberg/react-bootstrap';
+import { Route, Switch, Redirect, Link, useHistory } from 'react-router-dom';
 
 //table
 import Table from "react-bootstrap-table-next";
@@ -13,29 +14,43 @@ import withReactContent from 'sweetalert2-react-content';
 
 //work
 import { envi } from "../../environment";
-import { httpDelete, httpGet } from "../../data/baseHttpHandler";
+import { getRol, httpDelete, httpGet } from "../../data/baseHttpHandler";
+import { Routes } from "../../routes";
 
 const Books = () => {
 
-	const environment = envi.pages.librarian.books;
+    const environment = envi.pages.librarian.books;
+    const redirectTo = Routes.Books.path;
+    const propNameToChange = environment.propNameToChange;
+    const MAX_TEXT = envi.datatable.max_text;
 
-	const [rows, setRows] = useState([]);
+    const [rows, setRows] = useState([]);
 
-	useEffect(() => {
-		getData();
-	}, []);
+    const history = useHistory();
 
-	const getData = () => {
-		httpGet(environment.url)
-		.then(response => {
-			setRows([...response]);
-		})
-		.catch(error => {
-			setRows([]);
-		});
-	};
+    useEffect(() => {
+        checkIsValidSessionForLibrarian();
+    }, []);
 
-	const deleteData = (id = 0) => {
+    const checkIsValidSessionForLibrarian = () => {
+        if(getRol() > 0 && getRol() == envi.pages.librarian.id) {
+            getData();
+        } else {
+            history.push(Routes.UnauthorizedPage.path);
+        }
+    };
+
+    const getData = () => {
+        httpGet(environment.url)
+            .then(response => {
+                setRows([...response]);
+            })
+            .catch(error => {
+                setRows([]);
+            });
+    }
+
+    const deleteData = (id = 0) => {
 		if(id > 0) {
 			let url = `${environment.url}/${id}`;
 			httpDelete(url)
@@ -68,11 +83,11 @@ const Books = () => {
 	}));
 
 	const handlerCreate = () => {
-		console.log('create');
+        history.push(`${redirectTo}/create`);
 	}
 
 	const handlerEdit = (props) => {
-		console.log(props);
+        history.push(`${redirectTo}/${props.id}`);
 	};
 
 	const handlerDelete = async (props) => {
@@ -99,11 +114,20 @@ const Books = () => {
 		});
 	};
 
-	const columns = [
-		{ dataField: "id", text: "ID", hidden: true },
-		{ dataField: "title", text: "Title" },
+    const columns = [
+        { dataField: "id", text: "ID", hidden: true },
 		{ dataField: "isbn", text: "ISBN" },
-		{
+        { dataField: "title", text: "Title", formatter: (rowContent, row) =>{
+            let extraText = (row.title.length >= MAX_TEXT) ? envi.datatable.texts.viewDetail : '';
+			return `${row.title.substring(0, MAX_TEXT)} ${extraText}`;
+		} },
+        { dataField: "stock", text: "Stock" },
+        { dataField: "stockActual", text: "Actual Stock" },
+        /* { dataField: "description", text: "Description", formatter: (rowContent, row) => {
+            let extraText = (row[propNameToChange].length >= MAX_TEXT) ? envi.datatable.texts.viewDetail : '';
+            return `${row[propNameToChange].substring(0, MAX_TEXT)} ${extraText}`;
+        }}, */
+        {
 			dataField: 'action',
 			text: 'ACTION',
 			formatter: (rowContent, row) => {
@@ -119,44 +143,44 @@ const Books = () => {
 				)
 			}
 		}
-	];
+    ];
 
-	const customTotal = (from, to, size) => (
-		<div>
-			Showing {from} to {to} of {size} entries
-		</div>
-	);
+    const customTotal = (from, to, size) => (
+        <div>
+            Showing {from} to {to} of {size} entries
+        </div>
+    );
 
-	const customSizePerPage = (props) => {
-		const { options, currentSizePerPage, onSizePerPageChange } = props;
 
-		const onPageChange = (e) => {
-			const page = e.target.value;
-			onSizePerPageChange(page);
-		}
+    const customSizePerPage = (props) => {
+        const { options, currentSizePerPage, onSizePerPageChange } = props;
 
-		return (
-			<Row>
-				<Col xs="auto">
-					<Form.Select value={currentSizePerPage} onChange={onPageChange} className="pe-5">
-						{options.map(o => (
-							<option key={o.page} value={o.page}>
-								{o.text}
-							</option>
-						))}
-					</Form.Select>
-				</Col>
-				<Col xs="auto" className="d-flex align-items-center">
+        const onPageChange = (e) => {
+            const page = e.target.value;
+            onSizePerPageChange(page);
+        }
+
+        return (
+            <Row>
+                <Col xs="auto">
+                    <Form.Select value={currentSizePerPage} onChange={onPageChange} className="pe-5">
+                        {options.map(o => (
+                            <option key={o.page} value={o.page}>
+                                {o.text}
+                            </option>
+                        ))}
+                    </Form.Select>
+                </Col>
+                <Col xs="auto" className="d-flex align-items-center">
                     entries per page
                 </Col>
-			</Row>
-		);
-	};
+            </Row>
+        );
+    };
 
-
-	return (
-		<>
-			<hr />
+    return (
+        <>
+            <hr />
 			<div className="d-flex justify-content-between mb-3">
 				<Col xs="auto">
 					<h3>
@@ -165,63 +189,62 @@ const Books = () => {
 				</Col>
 				<Col xs="auto">
 					<Button variant="success" type="button" onClick={() => handlerCreate()}>
-						{envi.btn.texts.create} {environment.single}
+                    {envi.btn.texts.create} {environment.single}
 					</Button>
 				</Col>
 			</div>
+            <ToolkitProvider
+                keyField="id"
+                search={true}
+                columns={columns}
+                data={rows}
+                wrapperClasses="table-responsive"
+            >
+                {({ baseProps, searchProps }) => (
+                    <Paginator.PaginationProvider pagination={
+                        Pagination({
+                            custom: true,
+                            showTotal: true,
+                            alwaysShowAllBtns: true,
+                            totalSize: rows.length,
+                            paginationTotalRenderer: customTotal,
+                            sizePerPageRenderer: customSizePerPage
+                        })
+                    }>
+                        {({ paginationProps, paginationTableProps }) => (
+                            <Card>
+                                <div className="table-responsive py-2">
+                                    <Card.Header>
+                                        <Row>
+                                            <Col xs={12} md={6} className="py-1">
+                                                <Paginator.SizePerPageDropdownStandalone {...paginationProps} />
+                                            </Col>
+                                            <Col xs={12} md={6} className="d-flex justify-content-md-end py-1">
+                                                <Search.SearchBar {...searchProps} />
+                                            </Col>
+                                        </Row>
+                                    </Card.Header>
 
-			<ToolkitProvider
-				keyField="id"
-				search={true}
-				columns={columns}
-				data={rows}
-				wrapperClasses="table-responsive"
-			>
-				{({ baseProps, searchProps }) => (
-					<Paginator.PaginationProvider pagination={
-						Pagination({
-							custom: true,
-							showTotal: true,
-							alwaysShowAllBtns: true,
-							totalSize: rows.length,
-							paginationTotalRenderer: customTotal,
-							sizePerPageRenderer: customSizePerPage
-						})
-					}>
-						{({ paginationProps, paginationTableProps }) => (
-							<Card>
-								<div className="table-responsive py-2">
-									<Card.Header>
-										<Row>
-											<Col xs={12} md={6} className="py-1">
-												<Paginator.SizePerPageDropdownStandalone {...paginationProps} />
-											</Col>
-											<Col xs={12} md={6} className="d-flex justify-content-md-end py-1">
-												<Search.SearchBar {...searchProps} />
-											</Col>
-										</Row>
-									</Card.Header>
+                                    <Table {...baseProps} {...paginationTableProps} />
 
-									<Table {...baseProps} {...paginationTableProps} />
-
-									<Card.Footer>
-										<Row>
-											<Col xs={12} md={6} className="d-flex align-items-center py-1">
-												<Paginator.PaginationTotalStandalone {...paginationProps} />
-											</Col>
-											<Col xs={12} md={6} className="d-flex justify-content-md-end align-items-center mb-0 py-1">
-												<Paginator.PaginationListStandalone {...paginationProps} />
-											</Col>
-										</Row>
-									</Card.Footer>
-								</div>
-							</Card>
-						)}
-					</Paginator.PaginationProvider>
-				)}
-			</ToolkitProvider>
-		</>
-	);
+                                    <Card.Footer>
+                                        <Row>
+                                            <Col xs={12} md={6} className="d-flex align-items-center py-1">
+                                                <Paginator.PaginationTotalStandalone {...paginationProps} />
+                                            </Col>
+                                            <Col xs={12} md={6} className="d-flex justify-content-md-end align-items-center mb-0 py-1">
+                                                <Paginator.PaginationListStandalone {...paginationProps} />
+                                            </Col>
+                                        </Row>
+                                    </Card.Footer>
+                                </div>
+                            </Card>
+                        )}
+                    </Paginator.PaginationProvider>
+                )}
+            </ToolkitProvider>
+        </>
+    );
 }
 
 export default Books;

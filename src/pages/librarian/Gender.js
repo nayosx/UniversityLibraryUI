@@ -54,7 +54,10 @@ const Gender = (props) => {
                 delete(response.updated_at);
                 setData(response);
             })
-            .catch(error => {});
+            .catch(error => {
+                history.push(redirectToList);
+                toastr.error(envi.form.texts.errorServer);
+            });
         } else {
             setData(defaultData);
             history.push(redirectToList);
@@ -89,7 +92,6 @@ const Gender = (props) => {
                     let url = (isCreated) ? environment.url : `${environment.url}/${id}`;
                     let request = (isCreated) ? httpPost(url, values) : httpPut(url, values);
                     request.then(response => {
-                        console.log(response);
                         setSubmitting(false);
                         history.push(redirectToList);
                         toastr.success(`${titleForm}`);
@@ -113,9 +115,9 @@ const Gender = (props) => {
                                 </div>
     
                                 <div className="mb-3">
-                                    <label htmlFor="bio">Biography</label>
-                                    <Field as="textarea" rows="5" type="text" name="bio" className="form-control" />
-                                    <ErrorMessage name="bio" component="div" className="text-danger" />
+                                    <label htmlFor="bio">Description</label>
+                                    <Field as="textarea" rows="5" type="text" name="description" className="form-control" />
+                                    <ErrorMessage name="description" component="div" className="text-danger" />
                                 </div>
                                 <div className="mb-3">
                                     <button type="submit" disabled={isSubmitting} className="btn btn-primary">

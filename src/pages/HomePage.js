@@ -24,10 +24,18 @@ import Preloader from "../components/Preloader";
 // librarian
 import Authors from './librarian/Authors';
 import Author from './librarian/Author';
+
 import Books from './librarian/Books';
+import Book from './librarian/Book';
+
 import Genders from './librarian/Genders';
+import Gender from './librarian/Gender';
+
 import Loans from './librarian/Loans';
+import Loan from './librarian/Loan';
+
 import Students from './librarian/Students';
+import StudentCreateOrEdit from './librarian/Student';
 
 // Student
 import Student from './student/Student';
@@ -104,16 +112,16 @@ export default () => (
 		<RouteWithSidebar exact path={Routes.AuthorCreateOrEdit.path} component={Author} />
 
 		<RouteWithSidebar exact path={Routes.Books.path} component={Books} />
-		<RouteWithSidebar exact path={Routes.BookCreateOrEdit.path} component={Author} />
+		<RouteWithSidebar exact path={Routes.BookCreateOrEdit.path} component={Book} />
 
 		<RouteWithSidebar exact path={Routes.Genders.path} component={Genders} />
-		<RouteWithSidebar exact path={Routes.GenderCreateOrEdit.path} component={Author} />
+		<RouteWithSidebar exact path={Routes.GenderCreateOrEdit.path} component={Gender} />
 
 		<RouteWithSidebar exact path={Routes.Loans.path} component={Loans} />
-		<RouteWithSidebar exact path={Routes.Loans.path} component={Author} />
+		<RouteWithSidebar exact path={Routes.LoanDetail.path} component={Loan} />
 
 		<RouteWithSidebar exact path={Routes.Students.path} component={Students} />
-		<RouteWithSidebar exact path={Routes.StudentCreateOrEdit.path} component={Author} />
+		<RouteWithSidebar exact path={Routes.StudentCreateOrEdit.path} component={StudentCreateOrEdit} />
 
 		<Redirect to={Routes.NotFound.path} />
 	</Switch>

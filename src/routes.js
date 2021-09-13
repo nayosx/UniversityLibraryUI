@@ -25,11 +25,11 @@ export const Routes = {
     BookCreateOrEdit: {path: "/books/:id"},
 
     Genders: {path: "/genders"},
-    GenderCreateOrEdit: {path: "/authors/:id"},
+    GenderCreateOrEdit: {path: "/genders/:id"},
 
     Loans: {path: "/loans"},
     LoanDetail: {path: "/loans/:id"},
 
-    Students: {path: "/students"},
-    StudentCreateOrEdit: {path: "/students/:id"},
+    Students: {path: "/StudentList"},
+    StudentCreateOrEdit: {path: "/StudentList/:id"},
 };

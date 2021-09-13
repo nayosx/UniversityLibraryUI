@@ -22,7 +22,7 @@ const Authors = () => {
     const environment = envi.pages.librarian.authors;
     const redirectTo = Routes.Authors.path;
     const propNameToChange = environment.propNameToChange;
-    const MAX_TEXT = 60;
+    const MAX_TEXT = envi.datatable.max_text;
 
     const [rows, setRows] = useState([]);
 
@@ -43,13 +43,6 @@ const Authors = () => {
     const getData = () => {
         httpGet(environment.url)
             .then(response => {
-                console.log(response);
-                response.map(data => {
-                    if(data[propNameToChange]) {
-                        let extraText = (data[propNameToChange].length >= MAX_TEXT) ? envi.datatable.texts.viewDetail : '';
-                        data.shortText = `${data[propNameToChange].substring(0, MAX_TEXT)} ${extraText}`;
-                    }
-                });
                 setRows([...response]);
             })
             .catch(error => {
@@ -124,7 +117,10 @@ const Authors = () => {
     const columns = [
         { dataField: "id", text: "ID", hidden: true },
         { dataField: "name", text: "Name" },
-        { dataField: "shortText", text: "Biography" },
+        { dataField: "bio", text: "Biography", formatter: (rowContent, row) => {
+            let extraText = (row[propNameToChange].length >= MAX_TEXT) ? envi.datatable.texts.viewDetail : '';
+            return `${row[propNameToChange].substring(0, MAX_TEXT)} ${extraText}`;
+        }},
         {
 			dataField: 'action',
 			text: 'ACTION',

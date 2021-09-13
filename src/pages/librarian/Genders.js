@@ -1,48 +1,142 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Form } from '@themesberg/react-bootstrap';
+import { Row, Col, Card, Form, Button } from '@themesberg/react-bootstrap';
+import { Route, Switch, Redirect, Link, useHistory } from 'react-router-dom';
 
-// table
+//table
 import Table from "react-bootstrap-table-next";
 import Pagination from "react-bootstrap-table2-paginator";
 import * as Paginator from "react-bootstrap-table2-paginator";
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 
+//confirm
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+//work
 import { envi } from "../../environment";
-import { httpGet } from "../../data/baseHttpHandler";
+import { getRol, httpDelete, httpGet } from "../../data/baseHttpHandler";
+import { Routes } from "../../routes";
 
 const Genders = () => {
-    
+
     const environment = envi.pages.librarian.genders;
-    const propNameToChange = 'description'
-    const MAX_TEXT = 60;
+    const redirectTo = Routes.Genders.path;
+    const propNameToChange = environment.propNameToChange;
+    const MAX_TEXT = envi.datatable.max_text;
+
     const [rows, setRows] = useState([]);
 
+    const history = useHistory();
+
     useEffect(() => {
-        getData();
+        checkIsValidSessionForLibrarian();
     }, []);
+
+    const checkIsValidSessionForLibrarian = () => {
+        if(getRol() > 0 && getRol() == envi.pages.librarian.id) {
+            getData();
+        } else {
+            history.push(Routes.UnauthorizedPage.path);
+        }
+    };
 
     const getData = () => {
         httpGet(environment.url)
             .then(response => {
-                console.log(response);
-                response.map(data => {
-                    if(data[propNameToChange]) {
-                        let extraText = (data[propNameToChange].length >= MAX_TEXT) ? '... View detail for show all' : '';
-                        data.shortText = `${data[propNameToChange].substring(0, MAX_TEXT)} ${extraText}`;
-                    }
-                });
                 setRows([...response]);
             })
             .catch(error => {
-                console.log(error);
                 setRows([]);
             });
     }
 
+    const deleteData = (id = 0) => {
+		if(id > 0) {
+			let url = `${environment.url}/${id}`;
+			httpDelete(url)
+			.then(response => {
+				getData();
+				SwalDeleteWarning.fire(
+					environment.texts.deleteSucces,
+					environment.texts.deleteSuccesText,
+					'success'
+				);
+			})
+			.catch(error => {
+				getData();
+				SwalDeleteWarning.fire(
+					environment.texts.deleteCancelled,
+					environment.texts.deleteCancelledText,
+					'error'
+				);
+			});
+		} else {
+			console.log('Mostrar error aca');
+		}
+	}
+
+	const SwalDeleteWarning = withReactContent(Swal.mixin({
+		customClass: {
+		  confirmButton: 'btn btn-primary me-3',
+		  cancelButton: 'btn btn-gray'
+		},
+	}));
+
+	const handlerCreate = () => {
+        history.push(`${redirectTo}/create`);
+	}
+
+	const handlerEdit = (props) => {
+        history.push(`${redirectTo}/${props.id}`);
+	};
+
+	const handlerDelete = async (props) => {
+
+		await SwalDeleteWarning.fire({
+			icon: 'warning',
+			title: environment.texts.deleteWarning,
+			text: environment.texts.deleteInfo,
+			buttonsStyling: false,
+			showCancelButton: true,
+			confirmButtonText: environment.texts.deleteConfirmBtn
+			// footer: '<a href="#do-something">Why do I have this issue?</a>'
+		})
+		.then((result) => {
+			if(result.isConfirmed) {
+				deleteData(props.id);
+			} else {
+				SwalDeleteWarning.fire(
+					environment.texts.deleteCancelled,
+					environment.texts.deleteCancelledText,
+					'error'
+				);
+			}
+		});
+	};
+
     const columns = [
         { dataField: "id", text: "ID", hidden: true },
         { dataField: "name", text: "Name" },
-        { dataField: "shortText", text: "Biography" }
+        { dataField: "description", text: "Description", formatter: (rowContent, row) => {
+            let extraText = (row[propNameToChange].length >= MAX_TEXT) ? envi.datatable.texts.viewDetail : '';
+            return `${row[propNameToChange].substring(0, MAX_TEXT)} ${extraText}`;
+        }},
+        {
+			dataField: 'action',
+			text: 'ACTION',
+			formatter: (rowContent, row) => {
+				return (
+					<div className="btn-group" role="group">
+						<Button variant="info" type="button" className="btn btn-sm" onClick={() => handlerEdit(row)}>
+							{envi.btn.texts.edit} {environment.single}
+						</Button>
+						<Button variant="danger" type="button" className="btn btn-sm" onClick={() => handlerDelete(row)}>
+							{envi.btn.texts.delete} {environment.single}
+						</Button>
+					</div>
+				)
+			}
+		}
     ];
 
     const customTotal = (from, to, size) => (
@@ -80,11 +174,19 @@ const Genders = () => {
 
     return (
         <>
-            <div>
-                <h3>
-                    List of {environment.title}
-                </h3>
-            </div>
+            <hr />
+			<div className="d-flex justify-content-between mb-3">
+				<Col xs="auto">
+					<h3>
+						List of {environment.title}
+					</h3>
+				</Col>
+				<Col xs="auto">
+					<Button variant="success" type="button" onClick={() => handlerCreate()}>
+                    {envi.btn.texts.create} {environment.single}
+					</Button>
+				</Col>
+			</div>
             <ToolkitProvider
                 keyField="id"
                 search={true}
@@ -138,5 +240,4 @@ const Genders = () => {
         </>
     );
 }
-
 export default Genders;

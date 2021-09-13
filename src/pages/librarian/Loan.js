@@ -9,10 +9,10 @@ import { Routes } from "../../routes";
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 
-const Author = (props) => {
+const Loan = (props) => {
 
-    const environment = envi.pages.librarian.authors;
-    const redirectToList = Routes.Authors.path;
+    const environment = envi.pages.librarian.loans;
+    const redirectToList = Routes.Loans.path;
     toastr.options = envi.toastConfig;
 
     const history = useHistory();
@@ -54,10 +54,7 @@ const Author = (props) => {
                 delete(response.updated_at);
                 setData(response);
             })
-            .catch(error => {
-                history.push(redirectToList);
-                toastr.error(envi.form.texts.errorServer);
-            });
+            .catch(error => {});
         } else {
             setData(defaultData);
             history.push(redirectToList);
@@ -92,6 +89,7 @@ const Author = (props) => {
                     let url = (isCreated) ? environment.url : `${environment.url}/${id}`;
                     let request = (isCreated) ? httpPost(url, values) : httpPut(url, values);
                     request.then(response => {
+                        console.log(response);
                         setSubmitting(false);
                         history.push(redirectToList);
                         toastr.success(`${titleForm}`);
@@ -144,4 +142,4 @@ const Author = (props) => {
     );
 }
 
-export default Author;
+export default Loan;

@@ -9,10 +9,10 @@ import { Routes } from "../../routes";
 import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 
-const Author = (props) => {
+const StudentCreateOrEdit = (props) => {
 
-    const environment = envi.pages.librarian.authors;
-    const redirectToList = Routes.Authors.path;
+    const environment = envi.pages.librarian.students;
+    const redirectToList = Routes.Students.path;
     toastr.options = envi.toastConfig;
 
     const history = useHistory();
@@ -89,8 +89,20 @@ const Author = (props) => {
                 onSubmit={(values, { setSubmitting }) => {
                     toastr.clear();
                     setIsError(false);
-                    let url = (isCreated) ? environment.url : `${environment.url}/${id}`;
-                    let request = (isCreated) ? httpPost(url, values) : httpPut(url, values);
+                    let request = null;
+                    let url = '';
+                    if(isCreated) {
+                        values.rol_id = 1;
+                        values.password = '1234';
+                        values.password_confirmation = values.password;
+
+                        url = environment.url;
+                        request = httpPost(url, {user: values});
+                    } else {
+                        url = `${environment.url}/${id}`;
+                        request = httpPut(url, values);
+                    }
+
                     request.then(response => {
                         setSubmitting(false);
                         history.push(redirectToList);
@@ -108,6 +120,7 @@ const Author = (props) => {
                     <div className="col-md-6">
                         <div className="login-form bg-white mt-4 p-4">
                             <Form className="row g-3">
+
                                 <div className="mb-3">
                                     <label htmlFor="name">Name</label>
                                     <Field type="text" name="name" className="form-control" />
@@ -115,10 +128,23 @@ const Author = (props) => {
                                 </div>
     
                                 <div className="mb-3">
-                                    <label htmlFor="bio">Biography</label>
-                                    <Field as="textarea" rows="5" type="text" name="bio" className="form-control" />
-                                    <ErrorMessage name="bio" component="div" className="text-danger" />
+                                    <label htmlFor="lastname">Lastname</label>
+                                    <Field type="text" name="lastname" className="form-control" />
+                                    <ErrorMessage name="lastname" component="div" className="text-danger" />
                                 </div>
+
+                                <div className="mb-3">
+                                    <label htmlFor="email">Email</label>
+                                    <Field type="email" name="email" className="form-control" />
+                                    <ErrorMessage name="email" component="div" className="text-danger" />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label htmlFor="phone">Phone</label>
+                                    <Field type="phone" name="phone" className="form-control" />
+                                    <ErrorMessage name="phone" component="div" className="text-danger" />
+                                </div>
+
                                 <div className="mb-3">
                                     <button type="submit" disabled={isSubmitting} className="btn btn-primary">
                                         {titleForm}
@@ -144,4 +170,4 @@ const Author = (props) => {
     );
 }
 
-export default Author;
+export default StudentCreateOrEdit;
