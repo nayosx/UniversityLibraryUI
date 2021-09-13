@@ -1,66 +1,81 @@
-var getToken = (localStorage.getItem('token') === null) ? '' : localStorage.getItem('token');
-var Authorization = `Bearer ${getToken}`;
-
-async function httpPost(url = '', data = {}) {
-  const response = await fetch(url, {
-    method: 'POST',
-    mode: 'cors',
-    cache: 'no-cache',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization,
-      'custom': 'my header'
-    },
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer',
-    body: JSON.stringify(data)
-  });
-  return response.json();
+const getToken = () => {
+	return (sessionStorage.getItem('token') !== null) ? sessionStorage.getItem('token') : '';
 }
 
-async function httpPut(url = '', data = {}) {
-  const response = await fetch(url, {
-    method: 'PUT',
-    mode: 'cors',
-    cache: 'no-cache',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization,
-    },
-    redirect: 'follow',
-    referrerPolicy: 'no-referrer',
-    body: JSON.stringify(data)
-  });
-
-  return response.json();
+const setToken = (token) => {
+	sessionStorage.setItem('token', token);
 }
 
-async function httpGet(url = '') {
-  const response = await fetch(url, {
-    method: 'GET',
-    mode: 'cors',
-    cache: 'default',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization,
-      'custom': 'my header'
-    }
-  });
-  return response.json();
+
+const getRol = () => {
+	return (sessionStorage.getItem('rol') !== null) ? sessionStorage.getItem('rol') : 0;
 }
 
-async function httpDelete(url = '') {
-
-  const response = await fetch(url, {
-    method: 'DELETE',
-    mode: 'cors',
-    cache: 'default',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization,
-    }
-  });
-  return response.json();
+const setRol = (idRol) => {
+	sessionStorage.setItem('rol', idRol);
 }
 
-export { httpPost, httpGet, httpPut, httpDelete }
+const clearLocalDatabase = () => {
+	sessionStorage.clear();
+}
+
+const getHeaders = (isAuth = false) => {
+	const token = getToken();
+	let headers = {
+		'Content-Type': 'application/json'
+	};
+
+	if (isAuth && token !== '') {
+		headers.Authorization = `Bearer ${token}`;
+	}
+	return headers;
+}
+
+const httpPost = async (url = '', data = {}, isToken = true) => {
+	const response = await fetch(url, {
+		method: 'POST',
+		mode: 'cors',
+		cache: 'no-cache',
+		redirect: 'follow',
+		referrerPolicy: 'no-referrer',
+		body: JSON.stringify(data),
+		headers: getHeaders(isToken)
+	});
+	return response.json();
+}
+
+const httpGet = async (url = '', isToken = true) => {
+	const response = await fetch(url, {
+		method: 'GET',
+		mode: 'cors',
+		cache: 'default',
+		headers: getHeaders(isToken)
+	});
+	return response.json();
+}
+
+async function httpPut(url = '', data = {}, isToken = true) {
+	const response = await fetch(url, {
+		method: 'PUT',
+		mode: 'cors',
+		cache: 'no-cache',
+		redirect: 'follow',
+		referrerPolicy: 'no-referrer',
+		body: JSON.stringify(data),
+		headers: getHeaders(isToken)
+	});
+
+	return response.json();
+}
+
+const httpDelete = async(url = '', isToken = true) => {
+	const response = await fetch(url, {
+		method: 'DELETE',
+		mode: 'cors',
+		cache: 'default',
+		headers: getHeaders(isToken)
+	});
+	return response.json();
+}
+
+export { httpPost, httpGet, httpPut, httpDelete, setToken, clearLocalDatabase, getRol, setRol }

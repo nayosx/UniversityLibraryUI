@@ -11,13 +11,11 @@ const AuthReducer = (state = initState, action) => {
                 ...state,
                 user: action.payload.user
             };
-            break;
 
         case authTypes.logout:
             return {
                 user: null,
             } 
-            break;
         default:
             return state;
     }

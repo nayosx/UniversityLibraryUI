@@ -1,19 +1,114 @@
-const baseUrl = 'http://localhost:3000';
+const baseUrl = 'http://127.0.0.1:3000';
+const api = `${baseUrl}/api/v1`;
 const envi = {
+
+    datatable: {
+        texts: {
+            viewDetail: '... View detail for show all',
+        }
+    },
+
+    toastConfig: {
+        positionClass : 'toast-top-right',
+        hideDuration: 300,
+        timeOut: 4000,
+        progressBar: true,
+    },
+
+    form: {
+        texts: {
+            errorServer: "Error on server",
+        }
+    },
+    btn: {
+        texts: {
+            edit: "Edit",
+            create: "Create",
+            delete: "Delete",
+            update: "Update",
+            cancel: "Cancel",
+        }
+    },
     pages: {
         login: {
+            title: "Sing in",
             auth: `${baseUrl}/authenticate`,
             texts: {
                 errorServer: 'Server Error',
-                errorCredentials: 'Invalid credentials'
-            }
+                errorCredentials: 'Invalid credentials',
+                btnLogin: "Sign in",
+                btnLoginPleaseWaiting: "Please waiting"
+            },
+            defaultObj: { email: 'pacoelchato@mail.com', password: 'k1r@' },
         },
         student: {
             id: 1,
         },
         librarian: {
-            id: 2,
-        }
+            id: 1,
+            title: "Librarian",
+            authors: {
+                title: "Authors",
+                single: "Author",
+                url: `${api}/authors`,
+                texts: {
+                    validName: `Invalid name author`,
+                    nameRequired: "The name for author is required",
+                    deafultBio: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                    
+                    deleteWarning: "Warning!!!",
+                    deleteInfo: "are you sure you want to delete the author",
+                    deleteConfirmBtn: "Yes, delete it!",
+                    deleteCancelled: "Cancelled",
+                    deleteCancelledText: "Your author is not deleted",
+                    deleteSucces: "Deleted!",
+                    deleteSuccesText: "Your author has been deleted.",
+                },
+                defaultObj: { name: '', bio: '' },
+                propNameToChange: 'bio',
+            },
+            books: {
+                title: "Books",
+                single: "Book",
+                url: `${api}/books`,
+                texts: {
+                    deleteWarning: "Warning!!!",
+                    deleteInfo: "are you sure you want to delete the book",
+                    deleteConfirmBtn: "Yes, delete it!",
+                    deleteCancelled: "Cancelled",
+                    deleteCancelledText: "Your book is not deleted",
+                    deleteSucces: "Deleted!",
+                    deleteSuccesText: "Your book has been deleted.",
+                },
+            },
+            genders: {
+                title: "Genders",
+                single: "Gender",
+                url: `${api}/genders`,
+                texts: {
+                    validName: "Invalid name for gender",
+                    nameRequired: "The name for gender is required",
+                    defaultDesc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                    
+                    deleteWarning: "Warning!!!",
+                    deleteInfo: "are you sure you want to delete the gender",
+                    deleteConfirmBtn: "Yes, delete it!",
+                    deleteCancelled: "Cancelled",
+                    deleteCancelledText: "Your gender is not deleted",
+                    deleteSucces: "Deleted!",
+                    deleteSuccesText: "Your gender has been deleted.",
+                },
+                defaultObj: { name: '', description: '' },
+            },
+            loans: {
+                title: "Loans",
+                url: `${api}/loans`,
+            },
+            students: {
+                title: "Students",
+                url: `${api}/students`,
+            }
+        },
     }
 };
 export {envi};

@@ -11,6 +11,7 @@ import ResetPassword from "./auth/ResetPassword";
 import NotFoundPage from "./default/NotFound";
 import ServerError from "./default/ServerError";
 import Lock from "./default/Lock";
+import Unauthorized from './default/Unauthorized';
 
 
 // components
@@ -22,6 +23,7 @@ import Preloader from "../components/Preloader";
 // pages
 // librarian
 import Authors from './librarian/Authors';
+import Author from './librarian/Author';
 import Books from './librarian/Books';
 import Genders from './librarian/Genders';
 import Loans from './librarian/Loans';
@@ -89,6 +91,7 @@ export default () => (
 		<RouteWithLoader exact path={Routes.Lock.path} component={Lock} />
 		<RouteWithLoader exact path={Routes.NotFound.path} component={NotFoundPage} />
 		<RouteWithLoader exact path={Routes.ServerError.path} component={ServerError} />
+		<RouteWithLoader exact path={Routes.UnauthorizedPage.path} component={Unauthorized} />
 
 		{/* pages */}
 
@@ -98,10 +101,19 @@ export default () => (
 
 		{/*librarian*/}
 		<RouteWithSidebar exact path={Routes.Authors.path} component={Authors} />
+		<RouteWithSidebar exact path={Routes.AuthorCreateOrEdit.path} component={Author} />
+
 		<RouteWithSidebar exact path={Routes.Books.path} component={Books} />
+		<RouteWithSidebar exact path={Routes.BookCreateOrEdit.path} component={Author} />
+
 		<RouteWithSidebar exact path={Routes.Genders.path} component={Genders} />
+		<RouteWithSidebar exact path={Routes.GenderCreateOrEdit.path} component={Author} />
+
 		<RouteWithSidebar exact path={Routes.Loans.path} component={Loans} />
+		<RouteWithSidebar exact path={Routes.Loans.path} component={Author} />
+
 		<RouteWithSidebar exact path={Routes.Students.path} component={Students} />
+		<RouteWithSidebar exact path={Routes.StudentCreateOrEdit.path} component={Author} />
 
 		<Redirect to={Routes.NotFound.path} />
 	</Switch>

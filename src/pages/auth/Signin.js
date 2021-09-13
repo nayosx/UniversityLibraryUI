@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faEnvelope, faUnlockAlt } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookF, faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
@@ -7,39 +7,78 @@ import { Route, Switch, Redirect, Link, useHistory } from 'react-router-dom';
 import { Routes } from "../../routes";
 
 import BgImage from "../../assets/img/illustrations/signin.svg";
-import { httpPost, httpGet } from "../../data/baseHttpHandler";
+import { httpPost, httpGet, clearLocalDatabase, setToken, setRol } from "../../data/baseHttpHandler";
 import jwt_decode from "jwt-decode";
 import { useDispatch } from 'react-redux';
-import {saveUserAuth} from '../../redux/actions/AuthActions';
+import {logout, saveUserAuth} from '../../redux/actions/AuthActions';
 import {envi} from '../../environment';
  
 export default () => {
-	const [email, setEmail] = useState("pacoelchato@mail.com");
-	const [password, setPassword] = useState("k1r@");
+
+	const environment = envi.pages.login;
+	const [email, setEmail] = useState(environment.defaultObj.email);
+	const [password, setPassword] = useState(environment.defaultObj.password);
 
 	const [messageError, setMessageError] = useState("");
 	const [isError, setIsError] = useState(false);
 
-	let history = useHistory();
+	const [isDisabledBtn, setIsDisabledBtn] = useState(false);
+	const [messageBtn, setMessageBtn] = useState(environment.texts.btnLogin);
+
+	const history = useHistory();
 	const dispatch = useDispatch();
-	
+
+
+	useEffect(() => {
+		deleteData();
+	}, []);
+
+
+	const deleteData = () => {
+		clearLocalDatabase();
+		dispatch(logout());
+	}
+
+	const enableBtn = () => {
+		setIsDisabledBtn(false);
+		setMessageBtn(environment.texts.btnLogin);
+	}
+
+	const disableBtn = () => {
+		setIsDisabledBtn(true);
+		setMessageBtn(environment.texts.btnLoginPleaseWaiting);
+	}
+
 	const submitForm = (e) => {
 		e.preventDefault();
-		httpPost(envi.pages.login.auth, 
-			{ email,password }
-		).then(data => {
+		setIsError(false);
+
+		disableBtn();
+
+		httpPost(environment.auth, { email,password }, false)
+		.then(data => {
 			if(data) {
 				let user = jwt_decode(data.auth_token);
 				dispatch(saveUserAuth(user));
-				localStorage.setItem('token', data.auth_token);
-				history.push('/books');
+				setToken(data.auth_token);
+				setRol(user.rol);
+				console.log(user);
+				history.push(Routes.Books.path);
 			} else {
 				setIsError(true);
-				setMessageError(envi.pages.login.texts.errorCredentials);
+				setMessageError(environment.texts.errorCredentials);
 			}
-		}).catch((error) => {
+			
+			enableBtn();
+		})
+		.catch((error) => {
 			setIsError(true);
-			setMessageError(envi.pages.login.texts.errorServer);
+			if(error.message !== undefined) {
+				setMessageError(environment.texts.errorCredentials);
+			} else {
+				setMessageError(envi.form.texts.errorServer);
+			}
+			enableBtn();
 		});
 	}
 
@@ -89,8 +128,8 @@ export default () => {
 											</InputGroup>
 										</Form.Group>
 									</Form.Group>
-									<Button variant="primary" type="submit" className="w-100">
-										Sign in
+									<Button variant="primary" type="submit" className="w-100" disabled={isDisabledBtn}>
+										{messageBtn}
 									</Button>
 								</Form>
 

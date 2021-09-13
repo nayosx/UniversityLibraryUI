@@ -9,6 +9,7 @@ export const Routes = {
     Lock: { path: "/default/lock" },
     NotFound: { path: "/default/404" },
     ServerError: { path: "/default/500" },
+    UnauthorizedPage: {path: "/default/401"},
 
     //pages
 
@@ -18,8 +19,17 @@ export const Routes = {
 
     //librarian
     Authors: {path: "/authors"},
+    AuthorCreateOrEdit: {path: "/authors/:id"},
+    
     Books: {path: "/books"},
+    BookCreateOrEdit: {path: "/books/:id"},
+
     Genders: {path: "/genders"},
+    GenderCreateOrEdit: {path: "/authors/:id"},
+
     Loans: {path: "/loans"},
+    LoanDetail: {path: "/loans/:id"},
+
     Students: {path: "/students"},
+    StudentCreateOrEdit: {path: "/students/:id"},
 };

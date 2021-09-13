@@ -1,11 +1,16 @@
 import {authTypes} from '../types/index';
 export const saveUserAuth = (user) => async (dispatch, getState) => {
-    console.log(user);
     dispatch({
         type: authTypes.login,
         payload: {
             user
         }
+    });
+}
+
+export const logout =() => async (dispatch, getState) => {
+    dispatch({
+        type: authTypes.logout
     });
 }
 
